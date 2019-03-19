@@ -1,0 +1,35 @@
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset = "UTF-8">
+	<title>HTML page</title>
+</head>
+<body>
+	<h1>Google</h1>
+	<h2>This is a link to google</h2>
+<p>
+	<a href = "http://www.google.com">
+		<img src = "google.png"
+			alt = "Google" >
+	</a>
+</p>
+<h1>Reddit</h1>
+<h2>This is a link to reddit</h2>
+<p>
+	
+	<a href = "http://www.reddit.com">
+		<img src = "snu.png"
+			alt = "Reddit" >
+	</a>
+
+</p>
+<h2>HSV conversion>
+<p>
+	<img src = "test.png">
+	<img src = "h.jpg">
+	<img src = "s.jpg">
+</p>
+
+</body>
+</html>

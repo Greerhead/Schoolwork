@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+	
+
+
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>lander</title>
+    <script type="text/javascript"
+            src = "simpleGame.js"></script>
+    <script type="text/javascript">
+/*
+LunarLander 2.0, used gamestarter located at http://aharrisbooks.net/h5g/h5g_13/lander/
+added game timer, fixed the controls, scoring, added a gamer over screen, and platform movement after landing. future version could
+have a moving platform rather than static ones or possibly have asteroids or some such to dodge.
+*/
+    
+    var scene;
+    var lander;
+    var platform;
+    var message = "";
+    var score = 0;
+	var timer = 500;
+    
+    function Lander(){
+        tLander = new Sprite(scene, "lander.png", 50, 50);
+        tLander.setSpeed(0);
+        tLander.falling = true;
+        tLander.imgDefault = "lander.png";
+        tLander.imgUp = "landerUp.png";
+        tLander.imgLeft = "landerLeft.png";
+        tLander.imgRight = "landerRight.png";
+        
+        
+        tLander.checkGravity = function(){
+            if (this.falling){
+              this.addVector(180, .1);
+            } // end if
+        } // end checkGravity
+        
+        tLander.checkKeys = function(){
+            this.setImage(this.imgDefault);
+            if (keysDown[K_UP]){
+                this.setImage(this.imgUp);
+                this.addVector(0, .3);
+                this.falling = true;
+            } // end if
+            
+            if (keysDown[K_RIGHT]){
+                this.setImage(this.imgLeft);
+                this.addVector(90, .1);
+            } // end if
+            
+            if (keysDown[K_LEFT]){
+                this.setImage(this.imgRight);
+                this.addVector(270, .1);
+            } // end if
+            
+        } // end checkKeys
+        
+        tLander.showStats = function(){
+            //displays stats
+            output = "DX: " + Math.round(this.dx * 10) + "<br />";
+            output += "DY: " + Math.round(this.dy * 10) + "<br />";
+            output += "ALT: " + Math.round(525 - this.y) + "<br />";
+			output += "SCORE: " + score + "<br />";
+			output += "TIME: " + timer + "<br />";
+			output += "MSG: " + message + "<br />";
+			
+            
+            stats.innerHTML = output;
+        } // end showStats
+        
+        tLander.checkLanding = function(){
+          if (this.falling){
+				timer--;
+				if(timer <=0){
+						window.alert("You landed " + score + " times");
+						location.reload();
+				}
+            if (this.y > 525){
+              if (this.x < platform.x + 10){
+                if (this.x > platform.x - 10){
+                  if (this.dx < .2){
+                    if (this.dx > -.2){
+                      if (this.dy < 2){
+                        this.setSpeed(0);
+                        this.falling = false;
+                        message = "Nice Landing!";
+						platform = new Platform();
+						score++
+                      } else {
+                        message = "too much vertical speed";
+                      } // end if
+                    } else {
+                        message = "too fast to left";
+                    } // end if
+                    } else {
+                    message = "too fast to right";
+					}//end if
+                  } // end if                    
+                } // end 'x too big' if
+              } // end 'x too small' if
+            } // end 'y not big enough' if
+          } // end 'are we falling?' if
+        
+        return tLander;
+    } // end Lander constructor
+    
+    function Platform(){
+        tPlatform = new Sprite(scene, "platform.png", 50, 10);
+        tPlatform.setSpeed(0);
+        x = Math.random() * scene.width;
+        tPlatform.setPosition(x,550);
+	tPlatform.newPlatform = function(){
+		Platform();
+	}
+        
+        return tPlatform;
+    } // end platform constructor
+    
+    function init(){
+        scene = new Scene();
+        scene.setBG("black");
+        lander = new Lander();
+        platform = new Platform();
+        stats = document.getElementById("stats");
+        
+        scene.start();
+    } // end ini
+    
+    function update(){
+        scene.clear();
+        lander.checkGravity();
+        lander.checkKeys();
+        lander.showStats();
+        lander.checkLanding();
+        
+        lander.update();
+        platform.update();
+    } // end update
+    
+    </script>
+    <style type="text/css">
+        #stats {
+            position: absolute;
+            font-family: monospace;
+            left: 50px;
+            top: 50px;
+            z-index: 999;
+            color: white;
+        }
+    </style>
+</head>
+<body onload = "init()">
+    <div id = "stats">DX: 0, DY: 0, Alt: 550, SCORE: 0, TIMER: 1000</div>
+</body>
+</html>

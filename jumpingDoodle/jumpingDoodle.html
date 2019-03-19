@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Doodlejumper</title>
+    <script type="text/javascript"
+            src = "simpleGame.js"></script>
+    <script type="text/javascript">
+		
+	var scene;
+	var doodle;
+	var platforms;
+	var score = 0;
+	var NUM_PLATS = 13;
+	
+	function Doodle(){
+		tDoodle = new Sprite(scene, "doodle.png", 50, 50)
+		tDoodle.setSpeed(0);
+		tDoodle.setPosition(100, 200);
+		tDoodle.falling = true;
+		tDoodle.showStats = function(){
+            //displays stats
+			output += "SCORE: " + score + "<br />";
+			
+            
+            stats.innerHTML = output;
+        } // end showStats
+		
+		tDoodle.checkKeys = function(){
+			if (keysDown[K_LEFT]) {
+				this.x -= 5;
+			}//keysLeft
+			if (keysDown[K_RIGHT]) {
+				this.x +=5;
+			}//keysRight
+		}
+		tDoodle.checkAccel = function(){
+			newDX = accel.getAY();
+			newDX *= -5;
+			
+			this.setDX(newDX);
+		}
+		//implement constant gravity
+		tDoodle.addGravity = function(){
+			this.addVector(180,1);
+			if (this.y <= 50) {
+                this.y = 50;
+            }
+			if ( this.y > 560) {
+				window.alert("You jumped " + score + " times before you fell!");
+				location.reload();
+			}
+		}//end checkGravity
+		tDoodle.checkFalling = function() {
+		//if the Doodle sprite is falling (ie dy <= 0), falling state is true
+		if (this.dy>0) {
+			this.falling = true;
+		}//end if
+	}//end checkFalling
+	return tDoodle;
+	}//end Doodle definition
+	function Platform(){
+		tPlatform = new Sprite(scene, "platform.png", 50, 10);
+		tPlatform.setSpeed(0);
+		tPlatform.checkGravity = function(){
+			
+		}
+		tPlatform.showStats = function(){
+			output += "SCORE: " + score;
+			
+			stats.innerHTML = output;
+		}
+		tPlatform.reset = function(){
+			newX = Math.floor(Math.random() * 250);
+            this.setPosition(newX, 50);
+		}
+		tPlatform.checkBounds = function(){
+			if (this.y > 599) {
+                this.reset();
+			}
+		}
+	return tPlatform;
+	}
+	function makePlatforms() {
+		platforms = new Array(NUM_PLATS);
+		for (i = 0; i <NUM_PLATS; i++){
+			platforms[i] = new Platform();
+		}
+		for (j = 5; j < 13; j++){
+			randomX = Math.floor(Math.random() * 250);
+			randomY = Math.floor(Math.random() * 500);
+			platforms[j].setPosition(randomX, randomY);
+		}
+	}
+	function updatePlatforms() {
+		for (i = 0; i <NUM_PLATS;i++) {
+			platforms[i].dy = platforms[i].dy * .9
+			platforms[i].update();
+		}
+	}
+	function checkCollisions(){
+		if (doodle.falling == true){
+			//if doodle is falling, allow collisions
+			for (i = 0; i < NUM_PLATS; i++){
+				if (doodle.collidesWith(platforms[i])) {
+					doodle.dy = 0;
+					doodle.falling = false
+					doodle.addVector(0,10);
+					score++;
+					//add a vector to the platforms and add a vector to the doodle.
+					for (j = 0; j < NUM_PLATS; j++) {
+						platforms[j].addVector(180, 5);
+					}
+				}
+			}
+			
+		}
+		else{}
+	}
+	function init() {
+        scene = new Scene();
+		scene.setSize(300,600);
+		timer = new Timer();
+		doodle = new Doodle();
+		platform = new Platform();
+		makePlatforms();
+		platforms[1].setPosition(100,500);
+		platforms[2].setPosition(150,450);
+		platforms[3].setPosition(200,400);
+		platforms[4].setPosition(250,350);
+		scene.setBG("white");
+		//stats = document.getElementById("stats");
+		scene.start();
+    }
+	function update() {
+        scene.clear();
+		doodle.addGravity();
+		platform.checkBounds();
+		//doodle.showStats();
+		doodle.checkFalling();
+		checkCollisions();
+		if (scene.touchable) {
+			doodle.checkAccel();
+        }
+		else{
+			doodle.checkKeys();
+		}
+		doodle.update();
+		updatePlatforms();
+		
+		
+    }
+	</script>
+	
+<body onload = "init()">
+</body>
+</html>
+	

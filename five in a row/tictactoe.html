@@ -1,0 +1,137 @@
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>tictactoe.html</title>
+    <script type="text/javascript"
+            src = "simpleGame.js"></script>
+    <script>
+    
+    var game;
+    var cells;
+    var boardSprite;
+    var currentPlayer = 1;    
+    
+    var BLANK = 0;
+    var X = 1;
+    var O = 2;
+    var winningCombos;
+    
+    var playerName;
+    //var cellRank;
+    
+    function Cell(){
+        tCell = new Sprite(game, "blank.png", 100, 100);
+        tCell.setSpeed(0);
+        tCell.state = BLANK;
+    
+        tCell.images = new Array("blank.png", "X.png", "O.png");    
+        
+        tCell.checkClick = function(){
+            if (this.isClicked()){
+                if (this.state == BLANK){
+                    this.state = currentPlayer;
+                    this.setImage(this.images[currentPlayer]);
+                    
+                    //change the player
+                    if (currentPlayer == X){
+                        currentPlayer = O;
+                    } else {
+                        currentPlayer = X;
+                    } // end if
+                } // end if
+            } // end if
+        } // end checkClick
+        
+        return tCell;
+    } // end cell
+
+    function buildCells(){
+        cells = new Array(9);
+        xOffset = 100;
+        yOffset = 100;
+        for (i = 0; i < cells.length; i++){
+            cells[i] = new Cell();
+            row = parseInt(i / 3);
+            col = i % 3;
+            xPos = (row * 100) + xOffset;
+            yPos = (col * 100) + yOffset;
+            cells[i].setPosition(xPos, yPos);
+        } // end for loop
+    } // end buildCells
+    
+    function updateCells(){
+        for (i = 0; i < cells.length; i++){
+            cells[i].checkClick();
+            cells[i].update();
+        } // end for loop
+    } // end updateCells
+    
+    function setupData(){
+        winningCombos = new Array(
+            new Array(0, 1, 2),
+            new Array(3, 4, 5),
+            new Array(6, 7, 8),
+            new Array(0, 3, 6),
+            new Array(1, 4, 7),
+            new Array(2, 5, 8),
+            new Array(0, 4, 8),
+            new Array(2, 4, 6)
+        );
+
+    playerName = new Array ("none", "X", "O");
+        
+    } // end setupData();
+    
+    function checkWins(){
+        winner = 0
+        for (combo = 0; combo < winningCombos.length; combo++){
+            a = winningCombos[combo][0];
+            b = winningCombos[combo][1];
+            c = winningCombos[combo][2];
+            
+            if (cells[a].state == cells[b].state){
+                if (cells[b].state == cells[c].state){
+                    if (cells[a].state != BLANK){
+                        winner = cells[a].state;
+                    } // end if
+                } // end if
+            } // end if
+        } // end for
+        return winner;
+    } // end checkWins
+    
+    function init(){
+        game = new Scene();
+        game.setBG("blue");
+        game.setSize(400, 400);
+        
+        boardSprite = new Sprite(game, "board.png", 300, 300);
+        boardSprite.setSpeed(0);
+        boardSprite.setPosition(200, 200);
+        
+        buildCells();
+        setupData();
+        
+        game.start();
+    } // end init
+    
+    function update(){
+        game.clear();
+        boardSprite.update();
+        updateCells();
+        winner = checkWins();
+        if (winner != 0){
+            alert("Player " + playerName[winner] + " wins!");
+            document.location.href = "";
+        } // end if
+    
+    } // end update
+    
+    </script>
+</head>
+<body onload = "init()">
+    
+</body>
+</html>

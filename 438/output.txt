@@ -1,0 +1,24 @@
+
+           00
+civilizati 01
+destiny    02
+is         13
+knowledge  04
+of         25
+our        06
+science    07
+           00
+civilizati 01
+destiny    02
+is         13
+knowledge  04
+of         25
+our        06
+science    07
+civilizati 00
+destiny    01
+is         02
+knowledge  13
+of         04
+our        25
+science    06

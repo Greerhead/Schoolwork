@@ -1,0 +1,148 @@
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Up and Down arrows to move and space to shoot stuff!</title>
+    <script type="text/javascript"
+            src = "simpleGame.js"></script>
+    <script type="text/javascript">
+    
+	//sprites
+	var game;
+	var car;
+	var missile;
+	var missiles;
+	var road;
+	var EnemyCar
+	//sound
+	var Explosion;
+	
+	//constants
+	var NUM_MISSILES = 50;
+	var ROAD_SPEED = -10;
+	
+	function Car() {
+		tCar = new Sprite(game, "car.png", 50, 30);
+		tCar.setSpeed(0);
+		tCar.setAngle(90);
+		tCar.setPosition(30,300);
+		tCar.checkKeys = function(){
+			if (keysDown[K_UP]){
+				this.setDY(-5)
+			}
+			if (keysDown[K_DOWN]){
+				this.setDY(+5);
+			}
+			if (keysDown[K_SPACE]){
+				missile.fire();
+			}
+		} // end checkKeys
+            
+		return tCar;
+        } // end car def
+	function EnemyCar(){
+		tEnemyCar = new Sprite (game, "car2.png", 50, 30);
+		tEnemyCar.reset = function(){
+			this.setDX(ROAD_SPEED);
+			this.setDY(0);
+			newY = Math.random() * game.height;
+			this.setPosition (800, newY);
+		} // end reset
+	
+		tEnemyCar.checkBounds = function(){
+			if (this.x < 0){
+				this.reset();
+			} //end if
+		} //end checkbounds
+	
+		tEnemyCar.reset();
+		
+		return tEnemyCar;
+	} //end EnemyCar
+	function Missile(){
+		tMissile = new Sprite(game, "missile.png", 30, 20);
+		tMissile.hide();
+		
+		tMissile.fire = function(){
+                this.show();
+                this.setSpeed(15);
+                this.setBoundAction(DIE);
+                this.setPosition(car.x, car.y);
+                this.setAngle(car.getImgAngle());
+                this.setSpeed(15);
+            } // end fire
+		
+		return tMissile;
+	
+        } // end missile def
+		
+	function makeMissiles(){
+		missiles = new Array(NUM_MISSILES);
+		for (i = 0; i < NUM_MISSILES; i++){
+			missiles[i] = new Missile();
+		} // end for
+	} // end makeMissiles
+	
+	function updateMissiles(){
+		for (i = 0; i < NUM_MISSILES; i++){
+			missiles[i].update();
+		} // end for
+	} // end updateMissiles
+	
+	function Road(){
+		tRoad = new Sprite(game, "road.png", 4000, 600);
+		tRoad.setDY(0);
+		tRoad.setDX(ROAD_SPEED);
+		tRoad.setPosition(0,300);
+		
+		tRoad.checkBounds = function(){
+			if (this.x<=-1000){
+					this.setPosition(1000, 300)
+			} // end if
+		} // end checkBounds
+		return tRoad;
+	} // end road
+	
+	function checkCollision(){
+		// Missle hitting car
+		if (missile.collidesWith(EnemyCar)){
+			EnemyCar.reset();
+			Explosion.play();
+		} //end if
+	}
+        
+        buildSounds = function(){
+            Explosion = new Sound("Explosion.ogg");
+        }//endbuildsounds
+        
+	function init(){
+            game = new Scene();
+	    
+	    buildSounds();
+	    
+            car = new Car();
+	    EnemyCar = new EnemyCar();
+            makeMissiles();
+	    missile = new Missile();
+	    road = new Road();
+            game.start();
+	} // end init
+		
+	function update(){
+            game.clear();
+            road.update();
+            car.checkKeys();
+            car.update();
+	    
+	    checkCollision();
+	    
+	    EnemyCar.update();
+	    missile.update();
+            updateMissiles();
+	} // end update
+		
+	 </script>
+</head>
+<body onload = "init();">
+    
+</body>
+</html>
